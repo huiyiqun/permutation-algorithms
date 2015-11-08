@@ -69,10 +69,10 @@ if __name__ == '__main__':
     # For profiler
     # python -m cProfile dict.py
     #for r_result in recursive_PGA_with_dict(9):
-    #   print(r_result)
+    #   pass
 
     # For profiler
     # python -m cProfile dict.py
     #for i_result in iterative_PGA_with_dict(9):
-    #    print(i_result)
+    #    pass
     pass
