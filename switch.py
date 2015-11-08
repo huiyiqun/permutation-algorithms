@@ -11,12 +11,12 @@ def recursive_PGA_with_switch(width):
     Recursive permutation generation algorithm with switch
     '''
     # condition
-    assert width > 0
+    assert width >= 0
     assert type(width) is int
 
     # boundary
-    if width == 1:
-        yield '1'
+    if width == 0:
+        yield list()
         return
 
     # recursion
@@ -27,9 +27,7 @@ def recursive_PGA_with_switch(width):
         left = not left
 
         for i in positions:
-            perm = [sub_permutation[:i], str(width), sub_permutation[i:]]
-            #print(perm)
-            yield(''.join(perm))
+            yield sub_permutation[:i] + [width-1, ] + sub_permutation[i:]
 
 
 if __name__ == '__main__':
