@@ -98,3 +98,4 @@ if __name__ == '__main__':
     # python -m cProfile switch.py
     #for r_result in recursive_PGA_with_switch(9):
     #   pass
+    pass

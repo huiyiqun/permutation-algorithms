@@ -61,10 +61,10 @@ def iterative_PGA_with_dict(width):
 
 if __name__ == '__main__':
     # Verify results
-    for i_result, r_result in zip(iterative_PGA_with_dict(9), recursive_PGA_with_dict(9)):
-        if i_result != r_result:
-            # print(i_result, r_result)
-            print('Failed!')
+    #for i_result, r_result in zip(iterative_PGA_with_dict(9), recursive_PGA_with_dict(9)):
+    #    if i_result != r_result:
+    #        # print(i_result, r_result)
+    #        print('Failed!')
 
     # For profiler
     # python -m cProfile dict.py
@@ -75,3 +75,4 @@ if __name__ == '__main__':
     # python -m cProfile dict.py
     #for i_result in iterative_PGA_with_dict(9):
     #    print(i_result)
+    pass
