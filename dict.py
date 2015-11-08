@@ -6,8 +6,10 @@
 # Under here is two implementation recursive and iterative
 ###
 import math
-from common import integer_to_ascending_system_number
+import pyopencl as cl
+import numpy as np
 
+from common import integer_to_ascending_system_number
 
 def recursive_PGA_with_dict(width):
     '''
@@ -59,6 +61,59 @@ def iterative_PGA_with_dict(width):
         yield list(ret)
 
 
+def opencl_PGA_with_dict(width):
+    total_numbers = math.factorial(width)
+
+    ctx = cl.create_some_context()
+    queue = cl.CommandQueue(ctx)
+
+    program = cl.Program(ctx, """
+        __kernel void integer_to_ascending_system_number(__global long* asc_number) {{
+            int gid = get_global_id(0);
+            int global_addr = gid * {width};
+            int system = 1;
+            while(gid) {{
+                asc_number[global_addr+system-1] = gid % system;
+                gid /= system;
+                system += 1;
+            }}
+        }}
+
+        __kernel void PGA_with_dict(__global const long* asc_number, __global long* result) {{
+            int global_addr = get_global_id(0) * {width};
+            int unpicked[{width}];
+            int passby;
+            int i, j;
+            for (i = 0; i < {width}; i++)
+                unpicked[i] = 1;
+
+            for (i = {width}-1; i >= 0; i--) {{
+                passby = 0;
+                for (j = 0; j < {width}; j++) {{
+                    passby += unpicked[j];
+                    if (passby > asc_number[global_addr+i]) {{
+                        unpicked[j] = 0;
+                        result[global_addr+{width}-1-i] = j;
+                        break;
+                    }}
+                }}
+            }}
+        }}
+    """.format(width=width)).build()
+
+    asc = np.zeros((total_numbers, width), np.long)
+    asc_buf = cl.Buffer(ctx, cl.mem_flags.READ_WRITE, asc.nbytes)
+
+    result = np.zeros((total_numbers, width), np.long)
+    result_buf = cl.Buffer(ctx, cl.mem_flags.WRITE_ONLY, result.nbytes)
+
+    program.integer_to_ascending_system_number(queue, asc.shape, None, asc_buf)
+    program.PGA_with_dict(queue, asc.shape, None, asc_buf, result_buf)
+
+    cl.enqueue_copy(queue, result, result_buf)
+    return result
+
+
 if __name__ == '__main__':
     # Verify results
     #for i_result, r_result in zip(iterative_PGA_with_dict(9), recursive_PGA_with_dict(9)):
@@ -74,5 +129,10 @@ if __name__ == '__main__':
     # For profiler
     # python -m cProfile dict.py
     #for i_result in iterative_PGA_with_dict(9):
+    #    pass
+
+    # For profiler
+    # python -m cProfile dict.py
+    #for cl_result in opencl_PGA_with_dict(6):
     #    pass
     pass
