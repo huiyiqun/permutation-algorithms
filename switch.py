@@ -8,7 +8,8 @@
 
 def recursive_PGA_with_switch(width):
     '''
-    Recursive permutation generation algorithm with switch
+    Recursive permutation generation algorithm through switching
+    neighboring elements.
     '''
     # condition
     assert width >= 0
