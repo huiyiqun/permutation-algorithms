@@ -68,7 +68,7 @@ def opencl_PGA_with_dict(width):
     queue = cl.CommandQueue(ctx)
 
     program = cl.Program(ctx, """
-        __kernel void integer_to_ascending_system_number(__global long* asc_number) {{
+        __kernel void integer_to_ascending_system_number(__global short* asc_number) {{
             int gid = get_global_id(0);
             int global_addr = gid * {width};
             int system = 1;
@@ -79,10 +79,10 @@ def opencl_PGA_with_dict(width):
             }}
         }}
 
-        __kernel void PGA_with_dict(__global const long* asc_number, __global long* result) {{
+        __kernel void PGA_with_dict(__global const short* asc_number, __global short* result) {{
             int global_addr = get_global_id(0) * {width};
             int unpicked[{width}];
-            int passby;
+            short passby;
             int i, j;
             for (i = 0; i < {width}; i++)
                 unpicked[i] = 1;
@@ -101,10 +101,10 @@ def opencl_PGA_with_dict(width):
         }}
     """.format(width=width)).build()
 
-    asc = np.zeros((total_numbers, width), np.long)
+    asc = np.zeros((total_numbers, width), np.short)
     asc_buf = cl.Buffer(ctx, cl.mem_flags.READ_WRITE, asc.nbytes)
 
-    result = np.zeros((total_numbers, width), np.long)
+    result = np.zeros((total_numbers, width), np.short)
     result_buf = cl.Buffer(ctx, cl.mem_flags.WRITE_ONLY, result.nbytes)
 
     program.integer_to_ascending_system_number(queue, asc.shape, None, asc_buf)
@@ -136,6 +136,6 @@ if __name__ == '__main__':
 
     # For profiler
     # python -m cProfile dict.py
-    #for cl_result in opencl_PGA_with_dict(6):
-    #    pass
+    for cl_result in opencl_PGA_with_dict(10):
+        pass
     pass
