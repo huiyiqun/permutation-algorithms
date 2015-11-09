@@ -131,7 +131,6 @@ if __name__ == '__main__':
 
     # For profiler
     # python -m cProfile dict.py
-    for cl_result in opencl_PGA_with_dict(3):
-        print(cl_result)
-        # pass
+    #for cl_result in opencl_PGA_with_dict(12):
+    #    pass
     pass
