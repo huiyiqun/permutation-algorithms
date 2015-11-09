@@ -68,22 +68,20 @@ def opencl_PGA_with_dict(width):
     queue = cl.CommandQueue(ctx)
 
     program = cl.Program(ctx, """
-        __kernel void integer_to_ascending_system_number(__global short* asc_number) {{
-            int gid = get_global_id(0);
-            int global_addr = gid * {width};
-            int system = 1;
-            while(gid) {{
-                asc_number[global_addr+system-1] = gid % system;
-                gid /= system;
-                system += 1;
-            }}
-        }}
+        __kernel void PGA_with_dict(__global short* result) {{
+            int input = get_global_id(0);
+            int i, j;
 
-        __kernel void PGA_with_dict(__global const short* asc_number, __global short* result) {{
+            short asc_number[{width}];
+
+            for (i = 0; i < {width}; i++) {{
+                asc_number[i] = input % (i+1);
+                input /= (i+1);
+            }}
+
             int global_addr = get_global_id(0) * {width};
             int unpicked[{width}];
             short passby;
-            int i, j;
             for (i = 0; i < {width}; i++)
                 unpicked[i] = 1;
 
@@ -91,7 +89,7 @@ def opencl_PGA_with_dict(width):
                 passby = 0;
                 for (j = 0; j < {width}; j++) {{
                     passby += unpicked[j];
-                    if (passby > asc_number[global_addr+i]) {{
+                    if (passby > asc_number[i]) {{
                         unpicked[j] = 0;
                         result[global_addr+{width}-1-i] = j;
                         break;
@@ -101,17 +99,14 @@ def opencl_PGA_with_dict(width):
         }}
     """.format(width=width)).build()
 
-    asc = np.zeros((total_numbers, width), np.short)
-    asc_buf = cl.Buffer(ctx, cl.mem_flags.READ_WRITE, asc.nbytes)
-
     result = np.zeros((total_numbers, width), np.short)
     result_buf = cl.Buffer(ctx, cl.mem_flags.WRITE_ONLY, result.nbytes)
 
-    program.integer_to_ascending_system_number(queue, asc.shape, None, asc_buf)
-    program.PGA_with_dict(queue, asc.shape, None, asc_buf, result_buf)
+    program.PGA_with_dict(queue, (total_numbers,), None, result_buf)
 
     cl.enqueue_copy(queue, result, result_buf)
-    return result
+    for res in result:
+        yield list(res)
 
 
 if __name__ == '__main__':
@@ -136,6 +131,7 @@ if __name__ == '__main__':
 
     # For profiler
     # python -m cProfile dict.py
-    for cl_result in opencl_PGA_with_dict(10):
-        pass
+    for cl_result in opencl_PGA_with_dict(3):
+        print(cl_result)
+        # pass
     pass
