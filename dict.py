@@ -121,7 +121,7 @@ if __name__ == '__main__':
 
     # For profiler
     # python -m cProfile dict.py
-    #for r_result in recursive_PGA_with_dict(9):
+    #for r_result in recursive_PGA_with_dict(10):
     #   pass
 
     # For profiler
@@ -131,6 +131,6 @@ if __name__ == '__main__':
 
     # For profiler
     # python -m cProfile dict.py
-    #for cl_result in opencl_PGA_with_dict(12):
-    #    pass
+    for cl_result in opencl_PGA_with_dict(11):
+        pass
     pass
