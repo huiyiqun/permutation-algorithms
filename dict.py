@@ -62,6 +62,10 @@ def iterative_PGA_with_dict(width):
 
 
 def opencl_PGA_with_dict(width):
+    '''
+    Parallel permutation generation algorithm according
+    to dict order implemented with OpenCL.
+    '''
     total_numbers = math.factorial(width)
 
     ctx = cl.create_some_context()
