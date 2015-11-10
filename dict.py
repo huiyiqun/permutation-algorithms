@@ -117,14 +117,66 @@ def opencl_PGA_with_dict(width):
     return map(lambda res: list(res), result)
 
 
+def void_opencl_PGA_with_dict(width):
+    '''
+    Parallel permutation generation algorithm according
+    to dict order implemented with OpenCL.
+
+    Note: this version do not save result or return result
+    '''
+    total_numbers = math.factorial(width)
+
+    ctx = cl.create_some_context()
+    queue = cl.CommandQueue(ctx,
+            properties=cl.command_queue_properties.PROFILING_ENABLE)
+
+    program = cl.Program(ctx, """
+        __kernel void PGA_with_dict() {{
+            int input = get_global_id(0);
+            int i, j;
+
+            short asc_number[{width}];
+
+            for (i = 0; i < {width}; i++) {{
+                asc_number[i] = input % (i+1);
+                input /= (i+1);
+            }}
+
+            int global_addr = get_global_id(0) * {width};
+            int unpicked[{width}];
+            short passby;
+            for (i = 0; i < {width}; i++)
+                unpicked[i] = 1;
+
+            for (i = {width}-1; i >= 0; i--) {{
+                passby = 0;
+                for (j = 0; j < {width}; j++) {{
+                    passby += unpicked[j];
+                    if (passby > asc_number[i]) {{
+                        unpicked[j] = 0;
+                        // result[global_addr+{width}-1-i] = j;
+                        break;
+                    }}
+                }}
+            }}
+        }}
+    """.format(width=width)).build()
+
+    exec_evt = program.PGA_with_dict(queue, (total_numbers,), None)
+    exec_evt.wait()
+
+    print("Execution time over %s is: %g s" %
+            (queue.device.name, 1e-9*(exec_evt.profile.end - exec_evt.profile.start)))
+
+
 if __name__ == '__main__':
     # Verify results
-    if list(iterative_PGA_with_dict(8)) \
-            == list(recursive_PGA_with_dict(8))\
-            == list(opencl_PGA_with_dict(8)):
-        print('Verified!')
-    else:
-        print('Failed!')
+    #if list(iterative_PGA_with_dict(8)) \
+    #        == list(recursive_PGA_with_dict(8))\
+    #        == list(opencl_PGA_with_dict(8)):
+    #    print('Verified!')
+    #else:
+    #    print('Failed!')
 
     # For profiler
     # python -m cProfile dict.py
@@ -137,4 +189,8 @@ if __name__ == '__main__':
     # For profiler
     # python -m cProfile dict.py
     #opencl_PGA_with_dict(11)
+
+    # For profiler
+    # python -m cProfile dict.py
+    void_opencl_PGA_with_dict(15)
     pass
