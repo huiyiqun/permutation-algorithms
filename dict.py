@@ -65,7 +65,8 @@ def opencl_PGA_with_dict(width):
     total_numbers = math.factorial(width)
 
     ctx = cl.create_some_context()
-    queue = cl.CommandQueue(ctx)
+    queue = cl.CommandQueue(ctx,
+            properties=cl.command_queue_properties.PROFILING_ENABLE)
 
     program = cl.Program(ctx, """
         __kernel void PGA_with_dict(__global short* result) {{
@@ -102,11 +103,13 @@ def opencl_PGA_with_dict(width):
     result = np.zeros((total_numbers, width), np.short)
     result_buf = cl.Buffer(ctx, cl.mem_flags.WRITE_ONLY, result.nbytes)
 
-    program.PGA_with_dict(queue, (total_numbers,), None, result_buf)
+    exec_evt = program.PGA_with_dict(queue, (total_numbers,), None, result_buf)
+    exec_evt.wait()
+
+    print("Execution time is: %g s\n" % (1e-9*(exec_evt.profile.end - exec_evt.profile.start)))
 
     cl.enqueue_copy(queue, result, result_buf)
-    for res in result:
-        yield list(res)
+    return map(lambda res: list(res), result)
 
 
 if __name__ == '__main__':
