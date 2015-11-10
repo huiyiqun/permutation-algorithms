@@ -114,26 +114,22 @@ def opencl_PGA_with_dict(width):
 
 if __name__ == '__main__':
     # Verify results
-    #for i_result, r_result, cl_result in zip(iterative_PGA_with_dict(8),
-    #                                         recursive_PGA_with_dict(8),
-    #                                         opencl_PGA_with_dict(8)):
-    #    if i_result != r_result or \
-    #            r_result != list(cl_result):
-    #        print(i_result, r_result, cl_result)
-    #        print('Failed!')
+    if list(iterative_PGA_with_dict(8)) \
+            == list(recursive_PGA_with_dict(8))\
+            == list(opencl_PGA_with_dict(8)):
+        print('Verified!')
+    else:
+        print('Failed!')
 
     # For profiler
     # python -m cProfile dict.py
-    #for r_result in recursive_PGA_with_dict(10):
-    #   pass
+    #list(recursive_PGA_with_dict(10))
 
     # For profiler
     # python -m cProfile dict.py
-    #for i_result in iterative_PGA_with_dict(9):
-    #    pass
+    #list(iterative_PGA_with_dict(10))
 
     # For profiler
     # python -m cProfile dict.py
-    for cl_result in opencl_PGA_with_dict(11):
-        pass
+    #opencl_PGA_with_dict(11)
     pass
