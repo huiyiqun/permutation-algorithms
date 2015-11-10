@@ -110,7 +110,8 @@ def opencl_PGA_with_dict(width):
     exec_evt = program.PGA_with_dict(queue, (total_numbers,), None, result_buf)
     exec_evt.wait()
 
-    print("Execution time is: %g s\n" % (1e-9*(exec_evt.profile.end - exec_evt.profile.start)))
+    print("Execution time over %s is: %g s" %
+            (queue.device.name, 1e-9*(exec_evt.profile.end - exec_evt.profile.start)))
 
     cl.enqueue_copy(queue, result, result_buf)
     return map(lambda res: list(res), result)
