@@ -9,6 +9,7 @@
 import math
 import pyopencl as cl
 import numpy as np
+from time import time
 
 from common import integer_to_ascending_system_number
 
@@ -184,8 +185,12 @@ if __name__ == '__main__':
     #list(recursive_PGA_with_dict(10))
 
     # For profiler
-    # python -m cProfile dict.py
-    #list(iterative_PGA_with_dict(10))
+    for i in range(1, 11):
+        begin = time()
+        list(iterative_PGA_with_dict(i))
+        end = time()
+        print('Execution time of %d-bit dict-ordered permutation generation is %f s'
+                % (i, end - begin))
 
     # For profiler
     # python -m cProfile dict.py
@@ -193,5 +198,5 @@ if __name__ == '__main__':
 
     # For profiler
     # python -m cProfile dict.py
-    void_opencl_PGA_with_dict(15)
+    #void_opencl_PGA_with_dict(15)
     pass
