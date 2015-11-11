@@ -3,7 +3,8 @@
 # this algorithm will generate sequence according as 
 # dict order.
 #
-# Under here is two implementation recursive and iterative
+# Under here are two implementations recursive and iterative
+# as well as implementation with OpenCL.
 ###
 import math
 import pyopencl as cl
