@@ -167,8 +167,9 @@ def void_opencl_PGA_with_dict(width):
     exec_evt = program.PGA_with_dict(queue, (total_numbers,), None)
     exec_evt.wait()
 
-    print("Execution time over %s is: %g s" %
-            (queue.device.name, 1e-9*(exec_evt.profile.end - exec_evt.profile.start)))
+    print("Operations(log) per seconds over %s is: %g" %
+            (queue.device.name,
+             math.log(total_numbers / 1e-9*(exec_evt.profile.end - exec_evt.profile.start))))
 
 
 if __name__ == '__main__':
@@ -185,12 +186,12 @@ if __name__ == '__main__':
     #list(recursive_PGA_with_dict(10))
 
     # For profiler
-    for i in range(1, 11):
-       begin = time()
-       list(iterative_PGA_with_dict(i))
-       end = time()
-       print('Operations of %d-bit dict-ordered permutation generation per seconds is %f'
-               % (i, math.factorial(i) / (end - begin)))
+    #for i in range(1, 11):
+    #   begin = time()
+    #   list(iterative_PGA_with_dict(i))
+    #   end = time()
+    #   print('Operations of %d-bit dict-ordered permutation generation per seconds is %f'
+    #           % (i, math.factorial(i) / (end - begin)))
 
     # For profiler
     # python -m cProfile dict.py
@@ -198,6 +199,6 @@ if __name__ == '__main__':
 
     # For profiler
     # python -m cProfile dict.py
-    # for i in range(1, 14):
-        # void_opencl_PGA_with_dict(i)
+    for i in range(1, 14):
+        void_opencl_PGA_with_dict(i)
     pass
