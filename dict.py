@@ -186,11 +186,11 @@ if __name__ == '__main__':
 
     # For profiler
     for i in range(1, 11):
-        begin = time()
-        list(iterative_PGA_with_dict(i))
-        end = time()
-        print('Execution time of %d-bit dict-ordered permutation generation is %f s'
-                % (i, end - begin))
+       begin = time()
+       list(iterative_PGA_with_dict(i))
+       end = time()
+       print('Operations of %d-bit dict-ordered permutation generation per seconds is %f'
+               % (i, math.factorial(i) / (end - begin)))
 
     # For profiler
     # python -m cProfile dict.py
@@ -198,5 +198,6 @@ if __name__ == '__main__':
 
     # For profiler
     # python -m cProfile dict.py
-    #void_opencl_PGA_with_dict(15)
+    # for i in range(1, 14):
+        # void_opencl_PGA_with_dict(i)
     pass
